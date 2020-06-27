@@ -19,6 +19,7 @@ class CreatePesanansTable extends Migration
             $table->date('tanggal');
             $table->integer('jumlah_harga');
             $table->string('status');
+            $table->integer('kode_unik');
             $table->timestamps();
         });
     }

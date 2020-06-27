@@ -14,6 +14,19 @@
                 </ol>
             </nav>
         </div>
+        @if(empty($user->alamat))
+        <div class="col-md-12">
+            <div class="alert alert-danger" role="alert">
+                Data diri anda kurang lengkap, silahkan dilengkapi dulu untuk melanjutkan ke proses selanjutnya. <a href="{{ url('profile') }}" class="btn btn-sm btn-info"><strong>Klik Lengkapi Sekarang!</strong></a>
+            </div>
+        </div>
+        @elseif(empty($user->no_hp))
+        <div class="col-md-12">
+            <div class="alert alert-danger" role="alert">
+                Data diri anda kurang lengkap, silahkan dilengkapi dulu untuk melanjutkan ke proses selanjutnya. <a href="{{ url('profile') }}" class="btn btn-sm btn-info"><strong>Klik Lengkapi Sekarang!</strong></a>
+            </div>
+        </div>            
+        @endif 
        <div class="col-md-12">
            <div class="card">
                <div class="card-body">

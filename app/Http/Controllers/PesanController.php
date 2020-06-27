@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Barang;
 use App\Pesanan;
 use App\PesananDetail;
+use App\User;
 use Auth;
 use Alert;
 use Carbon\Carbon;
@@ -30,7 +31,7 @@ class PesanController extends Controller
     {
         date_default_timezone_set("Asia/Bangkok");
         $barang = Barang::where('id', $id)->first();
-        $tanggal = Carbon::now()->format('d-m-Y');
+        $tanggal = Carbon::now();
 
         //cek stok dulu
         if($request->jumlah_pesan > $barang->stok){
@@ -45,6 +46,7 @@ class PesanController extends Controller
             $pesanan->tanggal = $tanggal;
             $pesanan->status = 0;
             $pesanan->jumlah_harga = 0;
+            $pesanan->kode_unik = mt_rand(100, 999);
             $pesanan->save();
         }
 
@@ -85,6 +87,8 @@ class PesanController extends Controller
 
     public function check_out()
     {
+        $user = User::where('id',Auth::user()->id)->first();
+
         $pesanan = Pesanan::where('user_id', Auth::user()->id)->where('status',0)->first();
         if($pesanan === null){
             return redirect('home');
@@ -92,7 +96,7 @@ class PesanController extends Controller
         $pesanan_detail = PesananDetail::where('pesanan_id',$pesanan->id)->get();
         }
 
-        return view('pesan.check_out', compact('pesanan','pesanan_detail'));
+        return view('pesan.check_out', compact('pesanan','pesanan_detail','user'));
     }
 
     public function deleteone($id)
@@ -112,6 +116,15 @@ class PesanController extends Controller
 
     public function konfirmasi_check_out()
     {
+        $user = User::where('id',Auth::user()->id)->first();
+        if(empty($user->alamat)){
+            Alert()->error('Oww nampaknya data diri kamu belum lengkap', 'Data Diri Kurang Lengkap');
+            return redirect('profile');
+        }elseif(empty($user->no_hp)){
+            Alert()->error('Oww nampaknya data diri kamu belum lengkap', 'Data Diri Kurang Lengkap');
+            return redirect('profile');
+        }
+
         $pesanan = Pesanan::where('user_id', Auth::user()->id)->where('status',0)->first();
         $pesanan_id = $pesanan->id;
         $pesanan->status = 1;
@@ -125,7 +138,7 @@ class PesanController extends Controller
         }
         Alert()->success('Pesanan Berhasil dibeli', 'Sukses!!');
 
-        return redirect('home');
+        return redirect('history/'.$pesanan_id);
     }
 
 }
