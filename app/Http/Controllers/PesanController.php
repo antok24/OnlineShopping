@@ -141,4 +141,23 @@ class PesanController extends Controller
         return redirect('history/'.$pesanan_id);
     }
 
+    public function bayar($id)
+    {
+        $pesanan = Pesanan::where('user_id',Auth::user()->id)->where('id',$id)->first();
+
+        if(empty($pesanan->status_bayar)){
+            $pesanan_id = $pesanan->id;
+            $pesanan->status_bayar = 1;
+            $pesanan->update();
+
+            Alert()->success('Pesanan Berhasil di Bayar', 'Sukses!!');
+
+            return redirect('history/'.$pesanan_id);
+        }
+
+        Alert()->error('Pesanan ini Sudah di Bayar', 'Error!!');
+
+        return redirect('history');
+    }
+
 }

@@ -33,10 +33,10 @@
                                     <td>{{ $no++ }}</td>
                                     <td>{{ $pesanan->tanggal  }}</td>
                                     <td>
-                                        @if($pesanan->status == 1)
-                                        Sudah Pesan & Belum dibayar
+                                        @if($pesanan->status_bayar == 1)
+                                        Sudah di Bayar
                                         @else
-                                        Sudah dibayar
+                                        Belum dibayar
                                         @endif
                                     </td>
                                     <td align="left">Rp. {{ number_format($pesanan->jumlah_harga+$pesanan->kode_unik) }}</td>
@@ -44,14 +44,7 @@
                                         <a href="{{ url('history') }}/{{ $pesanan->id }}" class="btn btn-warning btn-sm" data-toggle="tooltip" data-placement="top" title="Detail Pemesanan"><i class="fa fa-info"></i> Detail pemesanan</a>
                                     </td>
                                 </tr>
-                                <tr>
-                                    <td colspan="3" align="center"><strong> Total Harga</strong></td>
-                                    <td><strong>Rp. {{ number_format($pesanan->jumlah_harga+$pesanan->kode_unik) }}</strong></td>
-                                    <td>
-                                        <a href="#" class="btn btn-success btn-sm"><i class="fa fa-money"></i> Bayar Sekarang</a>
-                                    </td>
-                                </tr>
-                            @endforeach                            
+                            @endforeach                           
                         </tbody>
                     </table>
                </div>
