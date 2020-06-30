@@ -54,11 +54,13 @@
                                         <form action="{{ url('check-out') }}/{{ $item->id }}" method="POST">
                                         @csrf
                                         {{ method_field('DELETE') }}
-                                        <button type="submit" class="btn btn-warning btn-sm"><i class="fa fa-trash"></i></button>
+                                        <button type="submit" class="btn btn-danger btn-sm"><i class="fa fa-trash"></i></button>
+                                        <a href="{{ url('check-out') }}/{{ $item->id }}" class="btn btn-warning btn-sm"><i class="fa fa-edit"></i></a>
                                         </form>
                                     </td>
                                 </tr>
                             @endforeach
+                            @if ($pesanan->jumlah_harga != 0)
                             <tr>
                                 <td colspan="4" align="center"><strong> Total Harga</strong></td>
                                 <td><strong>Rp. {{ number_format($pesanan->jumlah_harga) }}</strong></td>
@@ -66,6 +68,13 @@
                                     <a href="{{ url('konfirmasi-check-out') }}" class="btn btn-success btn-sm"><i class="fa fa-shopping-cart"></i> Check Out</a>
                                 </td>
                             </tr>
+                            @else
+                            <tr>
+                                <div class="alert alert-danger" role="alert">
+                                    Opsss, Pesanan Anda Kosong !! Yuk Belanja lagi <a href="{{ url('home') }}" class="btn btn-sm"><strong>Menuju ke Data Barang</strong></a>
+                                </div>
+                            </tr>
+                            @endif
                         </tbody>
                     </table>
                </div>

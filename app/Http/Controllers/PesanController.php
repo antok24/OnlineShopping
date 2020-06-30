@@ -10,6 +10,7 @@ use Auth;
 use Alert;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PesanController extends Controller
 {
@@ -54,6 +55,7 @@ class PesanController extends Controller
 
         //cek pesanan detail
         $cek_pesanan_detail = PesananDetail::where('barang_id', $barang->id)->where('pesanan_id', $pesanan_baru->id)->first();
+
         if(empty($cek_pesanan_detail)){
             $pesanan_detail = new PesananDetail;
             $pesanan_detail->barang_id = $barang->id;
@@ -85,6 +87,37 @@ class PesanController extends Controller
         return redirect('check-out');
     }
 
+    public function updatepesansekarang(Request $request, $id)
+    {
+            date_default_timezone_set("Asia/Bangkok");
+        
+            $pesanan_detail = PesananDetail::where('id', $id)->first();
+            $barang = Barang::where('id', $pesanan_detail->barang_id)->first();
+
+            // cek stok barang
+            if($request->jumlah_pesan > $barang->stok){
+                return redirect('check-out/'.$id);
+            }
+
+            $pesanan_detail->jumlah = $request->jumlah_pesan;
+            //harga sekarang
+            $harga_pesanan_detail_baru = $barang->harga*$request->jumlah_pesan;
+
+            $pesanan_detail->jumlah_harga = $harga_pesanan_detail_baru;
+            $pesanan_detail->update();
+
+            //jumlah total
+            $pesanan = Pesanan::where('user_id', Auth::user()->id)->where('id', $pesanan_detail->pesanan_id)->first();
+
+            $pesanan_detail_total_harga = PesananDetail::where('pesanan_id',$pesanan->id)->sum('jumlah_harga');
+
+            $pesanan->jumlah_harga = $pesanan_detail_total_harga;
+            $pesanan->update();
+
+            Alert()->success('Qity pesanan anda berhasil diperbarui', 'Success');
+            return redirect('check-out');
+    }
+
     public function check_out()
     {
         $user = User::where('id',Auth::user()->id)->first();
@@ -97,6 +130,13 @@ class PesanController extends Controller
         }
 
         return view('pesan.check_out', compact('pesanan','pesanan_detail','user'));
+    }
+
+    public function edit($id)
+    {
+        $pesanan_detail = PesananDetail::where('id', $id)->first();
+
+        return view('pesan.index', compact('pesanan_detail'));
     }
 
     public function deleteone($id)
